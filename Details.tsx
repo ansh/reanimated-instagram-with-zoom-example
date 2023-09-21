@@ -67,8 +67,6 @@ export function SharedElementTransitionDndDetail() {
     translationY: useSharedValue(0),
   };
   const rotate = {
-    rotationX: useSharedValue(0),
-    rotationY: useSharedValue(0),
     rad: useSharedValue(0),
   };
   // Pinch gesture for zooming into the image
@@ -81,13 +79,9 @@ export function SharedElementTransitionDndDetail() {
     });
   const rotateGesture = Gesture.Rotation()
     .onChange((event) => {
-      rotate.rotationX.value = event.anchorX;
-      rotate.rotationY.value = event.anchorY;
       rotate.rad.value = event.rotation;
     })
     .onEnd(() => {
-      rotate.rotationX.value = withSpring(0, { overshootClamping: true });
-      rotate.rotationY.value = withSpring(0, { overshootClamping: true });
       rotate.rad.value = withSpring(0, { overshootClamping: true });
     });
   const dragGesture = Gesture.Pan()
@@ -104,26 +98,27 @@ export function SharedElementTransitionDndDetail() {
       { scale: zoom.scale.value },
       { translateX: drag.translationX.value },
       { translateY: drag.translationY.value },
-      {rotate: `${rotate.rad.value}rad`},
+      { rotate: `${rotate.rad.value}rad` },
     ],
   }));
-  const composedGesture = Gesture.Simultaneous(pinchGesture, rotateGesture, dragGesture);
+  const composedImageGesture = Gesture.Simultaneous(pinchGesture, rotateGesture, dragGesture);
+  const composedPanGesture = Gesture.Exclusive(panGesture, dragGesture)
 
   return (
-    <GestureDetector gesture={panGesture}>
+    <GestureDetector gesture={composedPanGesture}>
       <Animated.View style={[styles.container, animatedStyle]}>
         <Animated.View entering={FadeIn.duration(200)} style={[styles.backdrop]} />
-        <GestureDetector gesture={composedGesture}>
-          <View style={[styles.content]}>
+        <View style={[styles.content]}>
+          <GestureDetector gesture={composedImageGesture}>
             <Animated.Image
               source={{ uri: activeItem.originalUri }}
               style={[styles.image, zoomedAnimatedStyle]}
               sharedTransitionTag={activeItem.originalUri}
             />
-            <Content />
-            <Button title="go back" onPress={goBack} />
-          </View>
-        </GestureDetector>
+          </GestureDetector>
+          <Content />
+          <Button title="go back" onPress={goBack} />
+        </View>
       </Animated.View>
     </GestureDetector>
   );
