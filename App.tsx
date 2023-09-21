@@ -20,6 +20,7 @@ const Stack = createNativeStackNavigator<Routes>();
 export function Navigator() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <StatusBar style="auto" />
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
