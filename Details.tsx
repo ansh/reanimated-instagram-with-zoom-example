@@ -69,6 +69,7 @@ export function SharedElementTransitionDndDetail() {
   const rotate = {
     rotationX: useSharedValue(0),
     rotationY: useSharedValue(0),
+    rad: useSharedValue(0),
   };
   // Pinch gesture for zooming into the image
   const pinchGesture = Gesture.Pinch()
@@ -82,10 +83,12 @@ export function SharedElementTransitionDndDetail() {
     .onChange((event) => {
       rotate.rotationX.value = event.anchorX;
       rotate.rotationY.value = event.anchorY;
+      rotate.rad.value = event.rotation;
     })
     .onEnd(() => {
       rotate.rotationX.value = withSpring(0, { overshootClamping: true });
       rotate.rotationY.value = withSpring(0, { overshootClamping: true });
+      rotate.rad.value = withSpring(0, { overshootClamping: true });
     });
   const dragGesture = Gesture.Pan()
     .onChange((event) => {
@@ -101,8 +104,7 @@ export function SharedElementTransitionDndDetail() {
       { scale: zoom.scale.value },
       { translateX: drag.translationX.value },
       { translateY: drag.translationY.value },
-      // { rotateX: `${rotate.rotationX.value}rad` },
-      // { rotateY: `${rotate.rotationY.value}rad` },
+      {rotate: `${rotate.rad.value}rad`},
     ],
   }));
   const composedGesture = Gesture.Simultaneous(pinchGesture, rotateGesture, dragGesture);
