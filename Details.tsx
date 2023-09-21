@@ -102,7 +102,7 @@ export function SharedElementTransitionDndDetail() {
     ],
   }));
   const composedImageGesture = Gesture.Simultaneous(pinchGesture, rotateGesture, dragGesture);
-  const composedPanGesture = Gesture.Exclusive(panGesture, dragGesture)
+  const composedPanGesture = Gesture.Exclusive(panGesture, dragGesture);
 
   return (
     <GestureDetector gesture={composedPanGesture}>
