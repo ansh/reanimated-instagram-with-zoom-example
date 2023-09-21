@@ -61,37 +61,57 @@ export function SharedElementTransitionDndDetail() {
 
   const zoom = {
     scale: useSharedValue(1),
-    // TODO: try to make rotate and translate work
-    // rotationX: useSharedValue(0),
-    // rotationY: useSharedValue(0),
-    // translationX: useSharedValue(0),
-    // translationY: useSharedValue(0),
+  };
+  const drag = {
+    translationX: useSharedValue(0),
+    translationY: useSharedValue(0),
+  };
+  const rotate = {
+    rotationX: useSharedValue(0),
+    rotationY: useSharedValue(0),
   };
   // Pinch gesture for zooming into the image
   const pinchGesture = Gesture.Pinch()
     .onChange((event) => {
       zoom.scale.value = event.scale;
-      // zoom.translationX.value = event.focalX - width / 2;
-      // zoom.translationY.value = event.focalY - height / 2;
     })
     .onEnd(() => {
       zoom.scale.value = withSpring(1, { overshootClamping: true });
-      // zoom.translationX.value = withSpring(0, { overshootClamping: true });
-      // zoom.translationY.value = withSpring(0, { overshootClamping: true });
+    });
+  const rotateGesture = Gesture.Rotation()
+    .onChange((event) => {
+      rotate.rotationX.value = event.anchorX;
+      rotate.rotationY.value = event.anchorY;
+    })
+    .onEnd(() => {
+      rotate.rotationX.value = withSpring(0, { overshootClamping: true });
+      rotate.rotationY.value = withSpring(0, { overshootClamping: true });
+    });
+  const dragGesture = Gesture.Pan()
+    .onChange((event) => {
+      drag.translationX.value += event.changeX;
+      drag.translationY.value += event.changeY;
+    })
+    .onEnd(() => {
+      drag.translationX.value = withSpring(0, { overshootClamping: true });
+      drag.translationY.value = withSpring(0, { overshootClamping: true });
     });
   const zoomedAnimatedStyle = useAnimatedStyle(() => ({
     transform: [
       { scale: zoom.scale.value },
-      // {translateX: zoom.translationX.value},
-      // {translateY: zoom.translationY.value},
+      { translateX: drag.translationX.value },
+      { translateY: drag.translationY.value },
+      // { rotateX: `${rotate.rotationX.value}rad` },
+      // { rotateY: `${rotate.rotationY.value}rad` },
     ],
   }));
+  const composedGesture = Gesture.Simultaneous(pinchGesture, rotateGesture, dragGesture);
 
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View style={[styles.container, animatedStyle]}>
         <Animated.View entering={FadeIn.duration(200)} style={[styles.backdrop]} />
-        <GestureDetector gesture={pinchGesture}>
+        <GestureDetector gesture={composedGesture}>
           <View style={[styles.content]}>
             <Animated.Image
               source={{ uri: activeItem.originalUri }}
