@@ -61,28 +61,29 @@ export function SharedElementTransitionDndDetail() {
 
   const zoom = {
     scale: useSharedValue(1),
-    rotationX: useSharedValue(0),
-    rotationY: useSharedValue(0),
-    translationX: useSharedValue(0),
-    translationY: useSharedValue(0),
+    // TODO: try to make rotate and translate work
+    // rotationX: useSharedValue(0),
+    // rotationY: useSharedValue(0),
+    // translationX: useSharedValue(0),
+    // translationY: useSharedValue(0),
   };
   // Pinch gesture for zooming into the image
   const pinchGesture = Gesture.Pinch()
     .onChange((event) => {
       zoom.scale.value = event.scale;
-      zoom.translationX.value = event.focalX - width / 2;
-      zoom.translationY.value = event.focalY - height / 2;
+      // zoom.translationX.value = event.focalX - width / 2;
+      // zoom.translationY.value = event.focalY - height / 2;
     })
     .onEnd(() => {
       zoom.scale.value = withSpring(1, { overshootClamping: true });
-      zoom.translationX.value = withSpring(0, { overshootClamping: true });
-      zoom.translationY.value = withSpring(0, { overshootClamping: true });
+      // zoom.translationX.value = withSpring(0, { overshootClamping: true });
+      // zoom.translationY.value = withSpring(0, { overshootClamping: true });
     });
   const zoomedAnimatedStyle = useAnimatedStyle(() => ({
     transform: [
       { scale: zoom.scale.value },
-      {translateX: zoom.translationX.value},
-      {translateY: zoom.translationY.value},
+      // {translateX: zoom.translationX.value},
+      // {translateY: zoom.translationY.value},
     ],
   }));
 
