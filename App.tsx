@@ -26,9 +26,6 @@ export function Navigator() {
           <Stack.Screen
             name="Home"
             component={SharedElementTransitionDndHome}
-            options={{
-              presentation: "transparentModal",
-            }}
           />
           <Stack.Screen
             name="Detail"
